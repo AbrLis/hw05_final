@@ -1,0 +1,21 @@
+{# Сюда будут выводится посты авторов на которых подписан текущий #}
+{#пользователь.#}
+{% extends 'base.html' %}
+{% block title %}
+  Лента подписок | {{ user.username }}
+{% endblock %}
+{% block content %}
+  <main>
+    <div class="container py-5">
+      <h1>Последние подписки</h1>
+      {% include 'posts/includes/switcher.html' %}
+      {% for post in page_obj %}
+        {% include "posts/includes/list_publications.html" %}
+        {% if not forloop.last %}
+          <hr>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% include "posts/includes/paginator.html" %}
+  </main>
+{% endblock %}

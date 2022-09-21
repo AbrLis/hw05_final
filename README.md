@@ -1,3 +1,20 @@
-# hw05_final
+# Учебный проект яндеск практикум Yatube 
 
-[![CI](https://github.com/yandex-praktikum/hw05_final/actions/workflows/python-app.yml/badge.svg?branch=master)](https://github.com/yandex-praktikum/hw05_final/actions/workflows/python-app.yml)
+### Описание
+Учебный проект обучения работе с фреймфорком Django.
+
+### Технологии
+- Django 2.2.8
+- Python 3.7
+### Запуск проекта в dev-режиме
+- Установите и активируйте виртуальное окружение
+- Установите зависимости из файла requirements.txt
+```
+pip install -r requirements.txt
+``` 
+- В папке с файлом manage.py выполните команду:
+```
+python3 manage.py runserver
+```
+### Авторы
+- Lisinka Андрей

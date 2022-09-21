@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}
+  {{ title }}
+{% endblock %}
+{% block content %}
+  <main>
+    <div class="container py-5">
+      <h1>Все посты пользователя
+        {{ username.get_full_name|default:username.get_username }}</h1>
+      <h3>Всего постов: {{ username.posts.count }}</h3>
+    <!-- Кнопки подписок -->
+    {% if user != username %}
+      {% if following %}
+        <a
+          class="btn btn-lg btn-info"
+          href="{% url 'posts:profile_unfollow' username %}"
+          role="button"
+        >
+          Отписаться
+        </a>
+      {% else %}
+        <a
+          class="btn btn-lg btn-primary"
+          href="{% url 'posts:profile_follow' username %}" role="button"
+        >
+          Подписаться
+        </a>
+      {% endif %}
+    {% endif %}
+    <!-- Кнопки подписок закончились -->
+      {% for post in page_obj %}
+        {% include "posts/includes/list_publications.html" %}
+        {% if not forloop.last %}
+          <hr>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% include "posts/includes/paginator.html" %}
+  </main>
+{% endblock %}
