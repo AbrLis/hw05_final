@@ -30,6 +30,11 @@ class PostPagesTest(TestCase):
             email="guest@example.com",
             password="password",
         )
+        cls.user2 = User.objects.create(
+            username="petya",
+            email="2@2.com",
+            password="password",
+        )
         small_gif = (
             b"\x47\x49\x46\x38\x39\x61\x02\x00"
             b"\x01\x00\x80\x00\x00\x00\x00\x00"
@@ -38,17 +43,21 @@ class PostPagesTest(TestCase):
             b"\x02\x00\x01\x00\x00\x02\x02\x0C"
             b"\x0A\x00\x3B"
         )
-        for _ in range(cls.COUNT_POST):
-            Post.objects.create(
-                author=cls.user,
-                text="TestText-1234567890",
-                group=cls.group,
-                image=SimpleUploadedFile(
-                    name="small.gif",
-                    content=small_gif,
-                    content_type="image/gif",
-                ),
-            )
+        Post.objects.bulk_create(
+            [
+                Post(
+                    author=cls.user,
+                    text=f"TestText-1234567890 {count} post",
+                    group=cls.group,
+                    image=SimpleUploadedFile(
+                        name="small.gif",
+                        content=small_gif,
+                        content_type="image/gif",
+                    ),
+                )
+                for count in range(cls.COUNT_POST)
+            ]
+        )
         cls.post = Post.objects.get(pk=cls.COUNT_POST)
 
     @classmethod
@@ -58,8 +67,43 @@ class PostPagesTest(TestCase):
 
     def setUp(self):
         self.auth_client = Client()
+        self.auth_client2 = Client()
         self.auth_client.force_login(self.user)
+        self.auth_client2.force_login(self.user2)
         cache.clear()
+
+    def test_following(self):
+        """Проверка возможности подписки и отписки авторизированными
+        пользователями"""
+        self.auth_client.get(
+            reverse("posts:profile_follow", kwargs={"username": self.user2})
+        )
+        self.assertEqual(self.user.follower.filter(user=self.user).count(), 1)
+        self.auth_client.get(
+            reverse("posts:profile_unfollow", kwargs={"username": self.user2})
+        )
+        self.assertEqual(self.user.follower.filter(user=self.user).count(), 0)
+
+    def test_list_follow(self):
+        """Проверка изменения количества записей листа подписок при
+        добавлении нового поста"""
+        self.auth_client.get(
+            reverse("posts:profile_follow", kwargs={"username": self.user2})
+        )
+        # Проверка на то что лента подписок пуста
+        response = self.auth_client.get(reverse("posts:follow_index"))
+        self.assertEqual(response.context["paginator"].count, 0)
+        self.auth_client2.post(
+            reverse("posts:post_create"),
+            data={
+                "text": "Новый пост",
+                "group": self.group.pk,
+            },
+            follow=True,
+        )
+        # Проверка на то что в лете появился пост
+        response = self.auth_client.get(reverse("posts:follow_index"))
+        self.assertEqual(response.context["paginator"].count, 1)
 
     def test_pages_correct_template(self):
         """Проверка корректности темплейтов"""
@@ -160,10 +204,19 @@ class PostPagesTest(TestCase):
     def test_comment_add_no_author(self):
         """Проверка, что незалогиненный пользователь не может комментировать"""
         response = self.client.get(
-            reverse("posts:post_detail", kwargs={"post_id": self.post.pk})
+            reverse("posts:add_comment", kwargs={"post_id": self.post.pk}),
+            {"text": "test_comment"},
+            follow=True,
         )
-        form = response.context.get("comment_form")
-        self.assertIsNone(form)
+        self.assertRedirects(
+            response,
+            reverse("users:login")
+            + "?next="
+            + reverse("posts:add_comment", kwargs={"post_id": self.post.pk})
+            + "?text=test_comment",
+            status_code=302,
+            target_status_code=200,
+        )
 
     def test_comment_send(self):
         """После успешной отправки комментарий появляется на странице поста."""

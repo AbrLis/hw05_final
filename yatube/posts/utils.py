@@ -6,5 +6,4 @@ class DataMixin:
     model = Post
 
     def get_context(self, **kwargs):
-        context = kwargs
-        return context
+        return kwargs

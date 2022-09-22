@@ -90,8 +90,3 @@ class PostURLTests(TestCase):
             with self.subTest(url=url):
                 response = self.client.get(url, follow=True)
                 self.assertRedirects(response, code)
-
-    def test_404(self):
-        """Проверка открытия несуществующей страницы"""
-        response = self.client.get("/xxx/")
-        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)

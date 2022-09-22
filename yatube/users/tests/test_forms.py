@@ -1,7 +1,8 @@
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from posts.models import User
+User = get_user_model()
 
 
 class TestForm(TestCase):

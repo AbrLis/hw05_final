@@ -3,16 +3,11 @@ from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
-from django.views.generic import (
-    CreateView,
-    DetailView,
-    FormView,
-    ListView,
-    RedirectView, UpdateView,
-)
+from django.views.generic import (CreateView, DetailView, FormView, ListView,
+                                  RedirectView, UpdateView)
 
-from .forms import PostForm, CommentForm
-from .models import Group, Post, Comment, Follow
+from .forms import CommentForm, PostForm
+from .models import Comment, Follow, Group, Post
 from .utils import DataMixin
 
 POST_ON_PAGE = 10
@@ -53,9 +48,7 @@ class ShowPostView(DataMixin, DetailView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context2 = self.get_context(
-            comment_form=CommentForm()
-            if self.request.user.is_authenticated
-            else None,
+            comment_form=CommentForm(),
             comments=Comment.objects.select_related()
             .filter(post=self.object)
             .all(),

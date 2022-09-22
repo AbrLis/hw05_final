@@ -1,8 +1,6 @@
 from django import forms
-from django.shortcuts import get_object_or_404
 
-from users.forms import User
-from .models import Post, Comment
+from .models import Comment, Post
 
 MIN_LEN_TEXT = 10
 
@@ -22,8 +20,8 @@ class PostForm(forms.ModelForm):
 class CommentForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         if kwargs:
-            self.user = kwargs.pop('author', None)
-            self.post = kwargs.pop('posts', None)
+            self.user = kwargs.pop("author", None)
+            self.post = kwargs.pop("posts", None)
         super().__init__(*args, **kwargs)
 
     def save(self, commit=True):
