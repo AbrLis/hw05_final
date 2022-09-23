@@ -3,8 +3,14 @@ from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
-from django.views.generic import (CreateView, DetailView, FormView, ListView,
-                                  RedirectView, UpdateView)
+from django.views.generic import (
+    CreateView,
+    DetailView,
+    FormView,
+    ListView,
+    RedirectView,
+    UpdateView,
+)
 
 from .forms import CommentForm, PostForm
 from .models import Comment, Follow, Group, Post
@@ -15,12 +21,21 @@ POST_ON_PAGE = 10
 
 class PostsView(DataMixin, ListView):
     """Вывод всех постов"""
+
     paginate_by = POST_ON_PAGE
     template_name = "posts/index.html"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context2 = self.get_context(
+            title="Последние обновления на сайте",
+        )
+        return {**context, **context2}
 
 
 class PostGroupView(DataMixin, ListView):
     """Лента постов сообщества"""
+
     template_name = "posts/group_list.html"
     group = None
     paginate_by = POST_ON_PAGE
@@ -32,7 +47,8 @@ class PostGroupView(DataMixin, ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context2 = self.get_context(
-            group=self.group, title="Записи сообщества "
+            group=self.group,
+            title="Записи сообщества ",
         )
         return dict(list(context.items()) + list(context2.items()))
 
@@ -42,6 +58,7 @@ class PostGroupView(DataMixin, ListView):
 
 class ShowPostView(DataMixin, DetailView):
     """Просмотр поста"""
+
     template_name = "posts/post_detail.html"
     pk_url_kwarg = "post_id"
 
@@ -58,6 +75,7 @@ class ShowPostView(DataMixin, DetailView):
 
 class ShowProfileView(DataMixin, ListView):
     """Профиль пользователя"""
+
     model = User
     username = None
     template_name = "posts/profile.html"
@@ -86,6 +104,7 @@ class ShowProfileView(DataMixin, ListView):
 
 class EditPostView(LoginRequiredMixin, DataMixin, UpdateView):
     """Редактирование поста"""
+
     form_class = PostForm
     pk_url_kwarg = "post_id"
     template_name = "posts/create_post.html"
@@ -121,6 +140,7 @@ class EditPostView(LoginRequiredMixin, DataMixin, UpdateView):
 
 class CreatePostView(LoginRequiredMixin, DataMixin, CreateView):
     """Создание поста"""
+
     form_class = PostForm
     template_name = "posts/create_post.html"
 
@@ -137,6 +157,7 @@ class CreatePostView(LoginRequiredMixin, DataMixin, CreateView):
 
 class AddCommentView(LoginRequiredMixin, FormView):
     """Добавление комментария"""
+
     form_class = CommentForm
 
     def form_valid(self, form):
@@ -159,8 +180,16 @@ class AddCommentView(LoginRequiredMixin, FormView):
 
 class FollowIndexView(LoginRequiredMixin, DataMixin, ListView):
     """Список постов, на которые подписан пользователь."""
+
     paginate_by = POST_ON_PAGE
-    template_name = "posts/follow.html"
+    template_name = "posts/index.html"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context2 = self.get_context(
+            title="Лента подписок",
+        )
+        return {**context, **context2}
 
     def get_queryset(self):
         return Post.objects.filter(author__following__user=self.request.user)
@@ -168,6 +197,7 @@ class FollowIndexView(LoginRequiredMixin, DataMixin, ListView):
 
 class ProfileFollowView(LoginRequiredMixin, RedirectView):
     """Подписка на автора."""
+
     def get_redirect_url(self, *args, **kwargs):
         return reverse_lazy(
             "posts:profile",
@@ -179,14 +209,13 @@ class ProfileFollowView(LoginRequiredMixin, RedirectView):
     def get(self, request, *args, **kwargs):
         author = get_object_or_404(User, username=self.kwargs["username"])
         if request.user != author:
-            Follow.objects.get_or_create(
-                user=request.user, author=author
-            )
+            Follow.objects.get_or_create(user=request.user, author=author)
         return super().get(request, *args, **kwargs)
 
 
 class ProfileUnfollowView(LoginRequiredMixin, RedirectView):
     """Отписка от автора."""
+
     def get_redirect_url(self, *args, **kwargs):
         return reverse_lazy(
             "posts:profile",

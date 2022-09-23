@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% block title %}
-  Последние обновления на сайте
+{{ title }}
 {% endblock %}
 {% block content %}
   <main>
     <div class="container py-5">
-      <h1>Последние обновления на сайте</h1>
+      <h1>{{ title }}</h1>
       {% include 'posts/includes/switcher.html' %}
       {% for post in page_obj %}
         {% include "posts/includes/list_publications.html" %}
