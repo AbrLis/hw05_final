@@ -1,10 +1,18 @@
 from django.urls import path
 from django.views.decorators.cache import cache_page
 
-from .views import (AddCommentView, CreatePostView, EditPostView,
-                    FollowIndexView, PostGroupView, PostsView,
-                    ProfileFollowView, ProfileUnfollowView, ShowPostView,
-                    ShowProfileView)
+from .views import (
+    AddCommentView,
+    CreatePostView,
+    EditPostView,
+    FollowIndexView,
+    PostGroupView,
+    PostsView,
+    ProfileFollowViewMixin,
+    ProfileUnfollowViewMixin,
+    ShowPostView,
+    ShowProfileView,
+)
 
 app_name = "posts"
 
@@ -27,15 +35,15 @@ urlpatterns = [
         AddCommentView.as_view(),
         name="add_comment",
     ),
-    path('follow/', FollowIndexView.as_view(), name='follow_index'),
+    path("follow/", FollowIndexView.as_view(), name="follow_index"),
     path(
-        'profile/<str:username>/follow/',
-        ProfileFollowView.as_view(),
-        name='profile_follow'
+        "profile/<str:username>/follow/",
+        ProfileFollowViewMixin.as_view(),
+        name="profile_follow",
     ),
     path(
-        'profile/<str:username>/unfollow/',
-        ProfileUnfollowView.as_view(),
-        name='profile_unfollow'
+        "profile/<str:username>/unfollow/",
+        ProfileUnfollowViewMixin.as_view(),
+        name="profile_unfollow",
     ),
 ]
