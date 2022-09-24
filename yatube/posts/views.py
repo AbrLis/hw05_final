@@ -28,6 +28,8 @@ class PostsView(DataMixin, ListView):
         )
         return {**context, **context2}
 
+    def get_queryset(self):
+        return Post.objects.select_related("group", "author").all()
 
 class PostGroupView(DataMixin, ListView):
     """Лента постов сообщества"""
@@ -48,7 +50,11 @@ class PostGroupView(DataMixin, ListView):
         return dict(list(context.items()) + list(context2.items()))
 
     def get_queryset(self):
-        return Post.objects.filter(group=self.group)
+        return (
+            Post.objects.filter(group=self.group)
+            .select_related("author")
+            .all()
+        )
 
 
 class ShowPostView(DataMixin, DetailView):
@@ -93,7 +99,11 @@ class ShowProfileView(DataMixin, ListView):
         self.username = get_object_or_404(
             User, username=self.kwargs["username"]
         )
-        return self.username.posts.all()
+        return (
+            self.username.posts.filter(author=self.username)
+            .select_related("group")
+            .all()
+        )
 
 
 class EditPostView(
@@ -171,12 +181,14 @@ class FollowIndexView(LoginRequiredMixin, DataMixin, ListView):
         return {**context, **context2}
 
     def get_queryset(self):
-        return Post.objects.filter(author__following__user=self.request.user)
+        return (
+            Post.objects.filter(author__following__user=self.request.user)
+            .select_related("author", "group")
+            .all()
+        )
 
 
-class ProfileFollowView(
-    LoginRequiredMixin, ReverseProfileMixin, RedirectView
-):
+class ProfileFollowView(LoginRequiredMixin, ReverseProfileMixin, RedirectView):
     """Подписка на автора."""
 
     def get(self, request, *args, **kwargs):
