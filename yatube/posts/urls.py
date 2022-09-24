@@ -8,8 +8,8 @@ from .views import (
     FollowIndexView,
     PostGroupView,
     PostsView,
-    ProfileFollowViewMixin,
-    ProfileUnfollowViewMixin,
+    ProfileFollowView,
+    ProfileUnfollowView,
     ShowPostView,
     ShowProfileView,
 )
@@ -38,12 +38,12 @@ urlpatterns = [
     path("follow/", FollowIndexView.as_view(), name="follow_index"),
     path(
         "profile/<str:username>/follow/",
-        ProfileFollowViewMixin.as_view(),
+        ProfileFollowView.as_view(),
         name="profile_follow",
     ),
     path(
         "profile/<str:username>/unfollow/",
-        ProfileUnfollowViewMixin.as_view(),
+        ProfileUnfollowView.as_view(),
         name="profile_unfollow",
     ),
 ]

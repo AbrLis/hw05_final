@@ -174,7 +174,7 @@ class FollowIndexView(LoginRequiredMixin, DataMixin, ListView):
         return Post.objects.filter(author__following__user=self.request.user)
 
 
-class ProfileFollowViewMixin(
+class ProfileFollowView(
     LoginRequiredMixin, ReverseProfileMixin, RedirectView
 ):
     """Подписка на автора."""
@@ -186,7 +186,7 @@ class ProfileFollowViewMixin(
         return super().get(request, *args, **kwargs)
 
 
-class ProfileUnfollowViewMixin(
+class ProfileUnfollowView(
     LoginRequiredMixin, ReverseProfileMixin, RedirectView
 ):
     """Отписка от автора."""
