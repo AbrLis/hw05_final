@@ -1,18 +1,10 @@
 from django.urls import path
 from django.views.decorators.cache import cache_page
 
-from .views import (
-    AddCommentView,
-    CreatePostView,
-    EditPostView,
-    FollowIndexView,
-    PostGroupView,
-    PostsView,
-    ProfileFollowView,
-    ProfileUnfollowView,
-    ShowPostView,
-    ShowProfileView,
-)
+from .views import (AddCommentView, CreatePostView, EditPostView,
+                    FollowIndexView, PostGroupView, PostsView,
+                    ProfileFollowView, ProfileUnfollowView, ShowPostView,
+                    ShowProfileView)
 
 app_name = "posts"
 

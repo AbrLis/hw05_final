@@ -2,14 +2,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
-from django.views.generic import (
-    CreateView,
-    DetailView,
-    FormView,
-    ListView,
-    RedirectView,
-    UpdateView,
-)
+from django.views.generic import (CreateView, DetailView, FormView, ListView,
+                                  RedirectView, UpdateView)
 
 from .forms import CommentForm, PostForm
 from .models import Comment, Follow, Group, Post
@@ -30,6 +24,7 @@ class PostsView(DataMixin, ListView):
 
     def get_queryset(self):
         return Post.objects.select_related("group", "author").all()
+
 
 class PostGroupView(DataMixin, ListView):
     """Лента постов сообщества"""

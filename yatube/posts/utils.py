@@ -1,5 +1,7 @@
 from django.urls import reverse_lazy
 
+from .models import Post
+
 POST_ON_PAGE = 10
 
 
