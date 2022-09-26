@@ -7,7 +7,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
-from ..models import Post, User
+from ..models import Group, Post, User
 
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
@@ -21,6 +21,22 @@ class TestFormPost(TestCase):
         super().setUpClass()
         cls.user = User.objects.create(username="vasya")
         Post.objects.create(text="Пост существует...........", author=cls.user)
+        cls.small_gif = (
+            b"\x47\x49\x46\x38\x39\x61\x02\x00"
+            b"\x01\x00\x80\x00\x00\x00\x00\x00"
+            b"\xFF\xFF\xFF\x21\xF9\x04\x00\x00"
+            b"\x00\x00\x00\x2C\x00\x00\x00\x00"
+            b"\x02\x00\x01\x00\x00\x02\x02\x0C"
+            b"\x0A\x00\x3B"
+        )
+        cls.group = Group.objects.create(
+            title="Тестовая группа", slug="test-slug", description="Описание"
+        )
+        cls.image = SimpleUploadedFile(
+            name="small.gif",
+            content=cls.small_gif,
+            content_type="image/gif",
+        )
 
     @classmethod
     def tearDownClass(cls):
@@ -34,21 +50,10 @@ class TestFormPost(TestCase):
     def test_send_valid_form_create(self):
         """Отправка валидной формы и проверка результата"""
         post_count = Post.objects.count()
-        small_gif = (
-            b"\x47\x49\x46\x38\x39\x61\x02\x00"
-            b"\x01\x00\x80\x00\x00\x00\x00\x00"
-            b"\xFF\xFF\xFF\x21\xF9\x04\x00\x00"
-            b"\x00\x00\x00\x2C\x00\x00\x00\x00"
-            b"\x02\x00\x01\x00\x00\x02\x02\x0C"
-            b"\x0A\x00\x3B"
-        )
         form = {
             "text": "Пост создал Вася!",
-            "image": SimpleUploadedFile(
-                name="small.gif",
-                content=small_gif,
-                content_type="image/gif",
-            ),
+            "group": self.group.id,
+            "image": self.image,
         }
         response = self.auth.post(
             reverse("posts:post_create"), data=form, follow=True
@@ -58,10 +63,13 @@ class TestFormPost(TestCase):
             reverse("posts:profile", kwargs={"username": self.user.username}),
         )
         self.assertEqual(Post.objects.count(), post_count + 1)
+        # Проверка всех полей поста
         self.assertTrue(
             Post.objects.filter(
-                text="Пост создал Вася!",
+                text=form["text"],
                 author=self.user,
+                group=form["group"],
+                image="posts/small.gif",
             ).exists()
         )
 
@@ -79,7 +87,9 @@ class TestFormPost(TestCase):
         )
         self.assertTrue(
             Post.objects.filter(
-                text="А вот и не Вася!", author=self.user, pk=1
+                text=form["text"],
+                author=self.user,
+                pk=1,
             ).exists()
         )
 

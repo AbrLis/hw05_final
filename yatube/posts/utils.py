@@ -1,8 +1,20 @@
+from django import forms
 from django.urls import reverse_lazy
 
 from .models import Post
 
 POST_ON_PAGE = 10
+MIN_LEN_TEXT = 10
+
+
+class ValidatePostFormMixin:
+    cleaned_data = None
+
+    def clean_text(self):
+        text = self.cleaned_data["text"]
+        if len(text.strip()) < MIN_LEN_TEXT:
+            raise forms.ValidationError("Не меньше 10 символов.")
+        return text
 
 
 class DataMixin:

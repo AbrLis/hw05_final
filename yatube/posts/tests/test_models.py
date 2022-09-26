@@ -48,7 +48,7 @@ class PostModelTest(TestCase):
         for field, value in fields_verbose_name.items():
             with self.subTest(field=field):
                 self.assertEqual(
-                    self.post._meta.get_field(field).verbose_name,
+                    Post._meta.get_field(field).verbose_name,
                     value,
                 )
 
