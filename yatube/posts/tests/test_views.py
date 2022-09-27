@@ -73,16 +73,21 @@ class PostPagesTest(TestCase):
         cache.clear()
 
     def test_following(self):
-        """Проверка возможности подписки и отписки авторизированными
-        пользователями"""
+        """Проверка возможности подписки авторизированными пользователями"""
         self.auth_client.get(
             reverse("posts:profile_follow", kwargs={"username": self.user2})
         )
-        self.assertEqual(self.user.follower.filter(user=self.user).count(), 1)
+        self.assertTrue(self.user.follower.filter(user=self.user).exists())
+
+    def test_unfollow(self):
+        """Проверка возможности отписки от автора"""
+        self.auth_client.get(
+            reverse("posts:profile_follow", kwargs={"username": self.user2})
+        )
         self.auth_client.get(
             reverse("posts:profile_unfollow", kwargs={"username": self.user2})
         )
-        self.assertEqual(self.user.follower.filter(user=self.user).count(), 0)
+        self.assertFalse(self.user.follower.filter(user=self.user).exists())
 
     def test_list_follow(self):
         """Проверка изменения количества записей листа подписок при
