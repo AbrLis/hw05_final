@@ -1,4 +1,5 @@
 import shutil
+from http import HTTPStatus
 
 from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -106,7 +107,7 @@ class PostPagesTest(TestCase):
             },
             follow=True,
         )
-        # Проверка на то что в лете появился пост
+        # Проверка на то что в ленте появился пост
         response = self.auth_client.get(reverse("posts:follow_index"))
         self.assertEqual(response.context["paginator"].count, 1)
 
@@ -215,12 +216,11 @@ class PostPagesTest(TestCase):
         )
         self.assertRedirects(
             response,
-            reverse("users:login")
-            + "?next="
-            + reverse("posts:add_comment", kwargs={"post_id": self.post.pk})
-            + "?text=test_comment",
-            status_code=302,
-            target_status_code=200,
+            f'{reverse("users:login")}?next='
+            f'{reverse("posts:add_comment", kwargs={"post_id": self.post.pk})}'
+            f"?text=test_comment",
+            status_code=HTTPStatus.FOUND,
+            target_status_code=HTTPStatus.OK,
         )
 
     def test_comment_send(self):

@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from django.test import TestCase
 
 
@@ -12,7 +14,7 @@ class TestStaticUrl(TestCase):
         for url in self.urls:
             with self.subTest(url=url):
                 response = self.client.get(url)
-                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_template_page(self):
         """Проверка соответствия темплейтов"""

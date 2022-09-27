@@ -107,3 +107,27 @@ class TestFormPost(TestCase):
         )
         form = response.context.get("form")
         self.assertEqual(form.errors["text"][0], "Не меньше 10 символов.")
+
+    def _test_form_comment(self):
+        """Проверка, что на странице присутствует форма комментария"""
+        response = self.auth.get(
+            reverse("posts:post_detail", kwargs={"post_id": 1})
+        )
+        self.assertTrue(response.context["form"].fields["text"])
+
+    def test_send_valid_form_comment(self):
+        """Отправка валидной формы комментария и проверка результата"""
+        form = {"text": "Комментарий"}
+        response = self.auth.post(
+            reverse("posts:add_comment", kwargs={"post_id": 1}),
+            data=form,
+            follow=True,
+        )
+        self.assertRedirects(
+            response, reverse("posts:post_detail", kwargs={"post_id": 1})
+        )
+        self.assertTrue(
+            Post.objects.filter(
+                pk=1, comments__text=form["text"], comments__author=self.user
+            ).exists()
+        )

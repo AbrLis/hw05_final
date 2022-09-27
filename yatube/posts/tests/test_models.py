@@ -62,5 +62,5 @@ class PostModelTest(TestCase):
         for field, value in fields_help_text.items():
             with self.subTest(field=field):
                 self.assertEqual(
-                    self.post._meta.get_field(field).help_text, value
+                    Post._meta.get_field(field).help_text, value
                 )

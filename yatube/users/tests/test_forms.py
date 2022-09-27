@@ -20,4 +20,4 @@ class TestForm(TestCase):
         response = self.client.post(reverse(template), data=form, follow=True)
         self.assertRedirects(response, "/")
         user = User.objects.filter(username="user", email="user@example.com")
-        self.assertEqual(user.count(), 1)
+        self.assertTrue(user.exists())

@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -37,7 +39,7 @@ class TestUrl(TestCase):
         for url in self.urls:
             with self.subTest(url=url):
                 response = self.client_login.get(url)
-                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_namespaces_open(self):
         """Проверка работы namespace"""
