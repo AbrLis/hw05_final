@@ -121,7 +121,6 @@ class EditPostView(
 
     def form_valid(self, form):
         new_post = form.save(commit=False)
-        new_post.author = new_post.author
         new_post.pub_date = timezone.now()
         return super().form_valid(form)
 

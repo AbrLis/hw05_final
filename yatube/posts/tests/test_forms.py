@@ -20,7 +20,6 @@ class TestFormPost(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.user = User.objects.create(username="vasya")
-        Post.objects.create(text="Пост существует...........", author=cls.user)
         cls.small_gif = (
             b"\x47\x49\x46\x38\x39\x61\x02\x00"
             b"\x01\x00\x80\x00\x00\x00\x00\x00"
@@ -32,11 +31,7 @@ class TestFormPost(TestCase):
         cls.group = Group.objects.create(
             title="Тестовая группа", slug="test-slug", description="Описание"
         )
-        cls.image = SimpleUploadedFile(
-            name="small.gif",
-            content=cls.small_gif,
-            content_type="image/gif",
-        )
+        Post.objects.create(text="Пост существует...........", author=cls.user)
 
     @classmethod
     def tearDownClass(cls):
@@ -49,11 +44,16 @@ class TestFormPost(TestCase):
 
     def test_send_valid_form_create(self):
         """Отправка валидной формы и проверка результата"""
+        image = SimpleUploadedFile(
+            name="test.gif",
+            content=self.small_gif,
+            content_type="image/gif",
+        )
         post_count = Post.objects.count()
         form = {
             "text": "Пост создал Вася!",
             "group": self.group.id,
-            "image": self.image,
+            "image": image,
         }
         response = self.auth.post(
             reverse("posts:post_create"), data=form, follow=True
@@ -63,19 +63,20 @@ class TestFormPost(TestCase):
             reverse("posts:profile", kwargs={"username": self.user.username}),
         )
         self.assertEqual(Post.objects.count(), post_count + 1)
-        # Проверка всех полей поста
-        self.assertTrue(
-            Post.objects.filter(
-                text=form["text"],
-                author=self.user,
-                group=form["group"],
-                image="posts/small.gif",
-            ).exists()
-        )
+        self.fields_test_helper(form, "posts/test.gif")
 
     def test_send_valid_form_edit(self):
         """Проверка изменения поста"""
-        form = {"text": "А вот и не Вася!"}
+        image = SimpleUploadedFile(
+            name="test2.gif",
+            content=self.small_gif,
+            content_type="image/gif",
+        )
+        form = {
+            "text": "А вот и не Вася!",
+            "group": self.group.id,
+            "image": image,
+        }
         response = self.auth.post(
             reverse("posts:post_edit", kwargs={"post_id": 1}),
             data=form,
@@ -85,11 +86,16 @@ class TestFormPost(TestCase):
         self.assertRedirects(
             response, reverse("posts:post_detail", kwargs={"post_id": 1})
         )
+        self.fields_test_helper(form, "posts/test2.gif")
+
+    def fields_test_helper(self, form, image_field):
+        """Проверка всех полей поста"""
         self.assertTrue(
             Post.objects.filter(
                 text=form["text"],
                 author=self.user,
-                pk=1,
+                group=form["group"],
+                image=image_field,
             ).exists()
         )
 

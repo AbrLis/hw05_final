@@ -7,10 +7,16 @@ User = get_user_model()
 
 class Follow(models.Model):
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="follower"
+        User,
+        on_delete=models.CASCADE,
+        related_name="follower",
+        verbose_name="Подписчик",
     )
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="following"
+        User,
+        on_delete=models.CASCADE,
+        related_name="following",
+        verbose_name="Автор",
     )
 
     class Meta:
@@ -19,6 +25,8 @@ class Follow(models.Model):
                 fields=["user", "author"], name="unique_follow"
             )
         ]
+        verbose_name = "Подписчик"
+        verbose_name_plural = "Подписчики"
 
 
 class Comment(models.Model):
@@ -87,15 +95,22 @@ class Post(models.Model):
 
     class Meta:
         ordering = ("-pub_date",)
+        verbose_name = "Пост"
+        verbose_name_plural = "Посты"
 
     def __str__(self):
         return self.text[:15]
 
 
 class Group(models.Model):
-    title = models.CharField(max_length=200)
-    slug = models.SlugField(max_length=200, unique=True)
-    description = models.TextField()
+    title = models.CharField(max_length=200, verbose_name="Название группы")
+    slug = models.SlugField(max_length=200, unique=True, verbose_name="Слаг")
+    description = models.TextField(verbose_name="Описание группы")
+
+    class Meta:
+        ordering = ("title",)
+        verbose_name = "Группа"
+        verbose_name_plural = "Группы"
 
     def __str__(self):
         return self.title
