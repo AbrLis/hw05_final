@@ -11,8 +11,8 @@
     </li>
   </ul>
   {% thumbnail post.image "960x339" crop="center" as im %}
-    <img class="card-img my-2" src="{{ im.url }}" width="{{ im.width }}"
-         height="{{ im.height }}" alt="image-false">
+    <img class="img-fluid rounded mx-auto d-block" src="{{ im.url }}"
+         alt="image-false">
   {% endthumbnail %}
   <p>{{ post.text|linebreaks }}</p>
   <a href="{% url 'posts:post_detail' post.pk %}">Подробная информация</a>
