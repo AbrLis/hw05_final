@@ -62,9 +62,7 @@ class ShowPostView(DataMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context2 = self.get_context(
             comment_form=CommentForm(),
-            comments=Comment.objects.select_related()
-            .filter(post=self.object)
-            .all(),
+            comments=self.object.comments.select_related('author'),
         )
         return dict(list(context.items()) + list(context2.items()))
 
