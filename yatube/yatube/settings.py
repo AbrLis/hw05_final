@@ -24,9 +24,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = "yvcyx*d&2e206log1j7@xoefkmi1_=tjtdl9%!#s9r69g%x%f0"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ("127.0.0.1", "localhost")
+ALLOWED_HOSTS = (
+    "www.LisinkaNeo.pythonanywhere.com",
+    "LisinkaNeo.pythonanywhere.com",
+)
 
 # Application definition
 

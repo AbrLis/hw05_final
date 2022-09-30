@@ -6,7 +6,7 @@ from django.views.generic import (CreateView, DetailView, FormView, ListView,
                                   RedirectView, UpdateView)
 
 from .forms import CommentForm, PostForm
-from .models import Comment, Follow, Group, Post
+from .models import Follow, Group, Post
 from .utils import DataMixin, ReverseProfileMixin, SuccessUrlDetailMixin
 
 
@@ -199,3 +199,8 @@ class ProfileUnfollowView(
         author = get_object_or_404(User, username=self.kwargs["username"])
         Follow.objects.filter(user=request.user, author=author).delete()
         return super().get(request, *args, **kwargs)
+
+# TODO: Удаление постов,
+# TODO: Удаление комментариев,
+# TODO: Редактирование комментариев,
+
