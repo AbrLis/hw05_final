@@ -23,7 +23,7 @@ pytz==2022.2.1
 requests==2.26.0
 six==1.16.0
 sorl-thumbnail==12.7.0
-sqlparse==0.4.2
+sqlparse==0.4.4
 toml==0.10.2
 typing_extensions==4.3.0
 urllib3==1.26.12
